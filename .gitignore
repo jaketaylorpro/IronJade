@@ -1,0 +1,8 @@
+# compiled
+*.exe
+*.dll
+*.pdb
+IronJade/obj/*
+IronJade/bin/*
+# user files
+*.suo
