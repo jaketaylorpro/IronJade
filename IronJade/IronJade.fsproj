@@ -42,7 +42,11 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IronJadeLexer.fs" />
+    <Compile Include="Util.fs" />
+    <Compile Include="LexTag.fs" />
+    <Compile Include="LexLine.fs" />
+    <Compile Include="LexNode.fs" />
+    <Compile Include="Lexer.fs" />
     <None Include="Script.fsx" />
   </ItemGroup>
   <PropertyGroup>
