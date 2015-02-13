@@ -9,12 +9,19 @@ open System.Text.RegularExpressions
                             | true,_ | false,true -> h true l.Tail p1 (x::p2)
                             | false,false -> h false l.Tail (x::p1) p2
             h false l [] []
+        let ifSomeTrimmed (s:string)=
+            match s.Trim() with
+            |"" -> None
+            |st -> Some(st)
+        let ifNoneEmpty (s:Option<string>)=
+            match s with
+            |None -> ""
+            |Some(st) -> st
         let (|Prefix|_|) (p:string) (s:string) =
             if s.StartsWith(p) then
                 Some(s.Substring(p.Length))
             else
                 None
-                
         let (|Regex|_|) pattern input =
             let m = Regex.Match(input, pattern)
             if m.Success 

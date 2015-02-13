@@ -28,7 +28,7 @@ open IronJade.Util
         let FULL_DIV_ID_PATTERN=REGEX_DIV_ID_PATTERN+REGEX_ATTR_PATTERN+REGEX_TEXT_PATTERN
         let FULL_DIV_CLASS_PATTERN=REGEX_DIV_CLASS_PATTERN+REGEX_ATTR_PATTERN+REGEX_TEXT_PATTERN
         
-        type LexTagValue(tag:string,attributes:List<string*string>,text:string)=
+        type LexTagValue(tag:string,attributes:List<string*Option<string>>,text:Option<string>)=
                     member this.Name=tag
                     member this.Attributes=attributes
                     member this.Text=text
@@ -36,23 +36,23 @@ open IronJade.Util
             |LexTagProper of LexTagValue
             |LexTagError
         let buildLexTag (line:string)=
-            let compileAttributes (id:string) (classes:List<string>) (attrN:List<string>) (attrV:List<string>) :List<string*string>=
-                let idPair=("id",id)
-                let classPair=("class",List.fold (fun acc c->if acc="" then c else acc+" "+c) "" classes)
+            let compileAttributes (id:string) (classes:List<string>) (attrN:List<string>) (attrV:List<Option<string>>) :List<string*Option<string>>=
+                let idPair=("id",Util.ifSomeTrimmed id)
+                let classPair=("class",Util.ifSomeTrimmed (List.fold (fun acc c->if acc="" then c else acc+" "+c) "" classes))
                 let attrPairs=List.zip attrN attrV
                 idPair::classPair::attrPairs
                 |>List.filter (fun (n,v)-> n.Trim() <> "" )
                 |>List.filter (fun (n,v)-> if n.Trim().ToLower() = "id"
-                                           then v.Trim() <> ""
+                                           then v.IsSome
                                            else true )
                 |>List.filter (fun (n,v)-> if n.Trim().ToLower() = "class"
-                                           then v.Trim() <> ""
+                                           then v.IsSome
                                            else true )
             match line with
             | Util.RegexMC FULL_TAG_PATTERN [[name];[id];classes;[firstAttrN];[firstAttrV];attrN;attrV;[text]] -> 
-                LexTagProper(new LexTagValue(name ,(compileAttributes id classes (firstAttrN::attrN) (firstAttrV::attrV)),text))
+                LexTagProper(new LexTagValue(name ,(compileAttributes id classes (firstAttrN::attrN) ((firstAttrV::attrV)|>List.map Util.ifSomeTrimmed)),(Util.ifSomeTrimmed text)))
             | Util.RegexMC FULL_DIV_ID_PATTERN [[id];classes;[firstAttrN];[firstAttrV];attrN;attrV;[text]] -> 
-                LexTagProper(new LexTagValue("div",(compileAttributes id classes (firstAttrN::attrN) (firstAttrV::attrV)),text))
+                LexTagProper(new LexTagValue("div",(compileAttributes id classes (firstAttrN::attrN) ((firstAttrV::attrV)|>List.map Util.ifSomeTrimmed)),(Util.ifSomeTrimmed text)))
             | Util.RegexMC FULL_DIV_CLASS_PATTERN [classes;[firstAttrN];[firstAttrV];attrN;attrV;[text]] -> 
-                LexTagProper(new LexTagValue("div",(compileAttributes "" classes (firstAttrN::attrN) (firstAttrV::attrV)),text))
+                LexTagProper(new LexTagValue("div",(compileAttributes "" classes (firstAttrN::attrN) ((firstAttrV::attrV)|>List.map Util.ifSomeTrimmed)),(Util.ifSomeTrimmed text)))
             | _-> LexTagError
