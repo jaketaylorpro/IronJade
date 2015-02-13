@@ -6,3 +6,5 @@ IronJade/obj/*
 IronJade/bin/*
 # user files
 *.suo
+# nuget
+packages/*
