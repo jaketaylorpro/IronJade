@@ -31,5 +31,6 @@ The goal is to implement all of the jade language, but we are going to start wit
 ### v0.3
 * full javascript support
 * full attribute support
-...
+
+
 ### v1.0 feature compatible with jade language
