@@ -5,6 +5,13 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IronJade", "IronJade\IronJade.fsproj", "{84B5808C-1793-4487-B539-87CCDDEE04B0}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IronJadeTests", "IronJadeTests\IronJadeTests.fsproj", "{1E39F58F-419A-4F14-9276-3937CF84787A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8C456E48-7123-4450-AFD5-03D70CB0E7E7}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,10 @@ Global
 		{84B5808C-1793-4487-B539-87CCDDEE04B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84B5808C-1793-4487-B539-87CCDDEE04B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84B5808C-1793-4487-B539-87CCDDEE04B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E39F58F-419A-4F14-9276-3937CF84787A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E39F58F-419A-4F14-9276-3937CF84787A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E39F58F-419A-4F14-9276-3937CF84787A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E39F58F-419A-4F14-9276-3937CF84787A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

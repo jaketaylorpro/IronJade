@@ -2,8 +2,8 @@
 *.exe
 *.dll
 *.pdb
-IronJade/obj/*
-IronJade/bin/*
+*/obj/*
+*/bin/*
 # user files
 *.suo
 # nuget

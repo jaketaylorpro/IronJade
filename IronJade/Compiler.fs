@@ -1,30 +1,29 @@
 ﻿namespace IronJade
-open LexTag
-open LexLine
-open LexNode
     module Compiler=
-        let compileString (env:List<string*string>) (s:Option<string>) :Option<string>=
-            match s with
-            |None -> None
-            |Some(st) ->
-                Some(List.fold (fun acc (n,v) ->st.Replace("#{"+n+"}",v)) st env)
-        let compileLexNode (rootNode:LexNode) (environment:List<string*string>) :LexNode=
-            let compileStringWithEnv = compileString environment
-            let compileTag (tag:LexTag) =
+        let compileString (env:List<string*string>) (s:string) :string=
+            List.fold (fun (acc:string) (n,v) ->acc.Replace("#{"+n+"}",v)) s env
+        let compileLexNode (env:List<string*string>) (rootNode:LexNode.LexNode) :LexNode.LexNode=
+            let compileStringWithEnv = compileString env
+            let compileOptStringWithEnv text= match text with
+                                              |None -> None
+                                              |Some(s) -> Some(compileString env s)
+            let compileTag (tag:LexTag.LexTag) =
                 match tag with
-                |LexTag.LexTagError -> LexTag.LexTagError
-                |LexTag.LexTagProper(v) -> 
-                    let text=compileStringWithEnv v.Text
-                    let attrN,attrV=v.Attributes
-                                    |>List.unzip
-                    let attributes=List.zip attrN (attrV|>List.map compileStringWithEnv)
-                    LexTag.LexTagProper(new LexTagValue(v.Name,attributes,text))
-            let compileLexLine (line:LexLine) :LexLine=
+                |LexTag.LexTagError(_)|LexTag.LexTagInnerError(_) -> tag //no text to compile, so we return the same record
+                |LexTag.LexTagProper({Name=name;Attributes=attributes;LexInnerTag=innerTag}) ->
+                    let attrN,attrV=attributes|>List.unzip
+                    let compiledAttributes=List.zip attrN (attrV|>List.map compileOptStringWithEnv)
+                    let compiledInnerTag=match innerTag with
+                                         |LexInnerTag.BlockText|LexInnerTag.InnerLexTagError(_)|LexInnerTag.Normal -> innerTag //no text to compile, so we return the same record
+                                         |LexInnerTag.Inline(text) -> LexInnerTag.Inline(compileStringWithEnv text)
+                    LexTag.LexTagProper({Name=name;Attributes=compiledAttributes;LexInnerTag=compiledInnerTag})
+            let compileLexLine (line:LexLine.LexLine) :LexLine.LexLine=
                 match line with
                 |LexLine.Root -> LexLine.Root
-                |LexLine.TextBlockLine(text) -> LexLine.TextBlockLine((compileStringWithEnv (Some(text))).Value)
-                |LexLine.TextLine(text) -> LexLine.TextLine((compileStringWithEnv (Some(text))).Value)
+                |LexLine.DocType(text) -> LexLine.DocType (compileStringWithEnv text)
+                |LexLine.TextBlockLine(text) -> LexLine.TextBlockLine(compileStringWithEnv text)
+                |LexLine.TextLine(text) -> LexLine.TextLine(compileStringWithEnv text)
                 |LexLine.Tag(tag) -> LexLine.Tag(compileTag tag)
-            let rec h (n:LexNode) :LexNode=
-                new LexNode(n.LexLine,n.ChildNodes|>List.map h,n.Indentation,n.LineNumber)
+            let rec h (n:LexNode.LexNode) :LexNode.LexNode=
+                {LexLine=n.LexLine;ChildNodes=n.ChildNodes|>List.map h;Indentation=n.Indentation;LineNumber=n.LineNumber}
             h rootNode

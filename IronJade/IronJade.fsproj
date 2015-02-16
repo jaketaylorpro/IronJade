@@ -49,13 +49,15 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <None Include="packages.config" />
     <Compile Include="Util.fs" />
+    <Compile Include="Constants.fs" />
+    <Compile Include="LexInnerTag.fs" />
     <Compile Include="LexTag.fs" />
     <Compile Include="LexLine.fs" />
     <Compile Include="LexNode.fs" />
     <Compile Include="Lexer.fs" />
     <Compile Include="Compiler.fs" />
-    <None Include="packages.config" />
     <Compile Include="Formatter.fs" />
   </ItemGroup>
   <ItemGroup>
