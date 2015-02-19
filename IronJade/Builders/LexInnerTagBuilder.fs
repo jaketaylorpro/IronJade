@@ -1,11 +1,5 @@
 ﻿namespace IronJade
-    module LexInnerTag=
-        type LexInnerTag=
-            |BlockText
-            |Inline of string
-            |Normal
-            |InnerLexTagError of string
-    
+    module LexInnerTagBuilder=
         let buildLexInnerTag (s:string) :LexInnerTag=
             match (s.TrimEnd()) with
             | "."-> BlockText

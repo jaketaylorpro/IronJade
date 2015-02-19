@@ -15,12 +15,9 @@ open System.Text.RegularExpressions
         let mapfoldfst f s l=
             fst (mapfold f s l)
         let takeWhileAndRest (f:'a->bool) (l:List<'a>) :List<'a>*List<'a>=
-            let groups=l|>Seq.groupBy (fun a -> f a)|>Seq.sortBy fst|>Seq.toList
-            match groups with
-            | [(true,take)]              -> (take|>Seq.toList),[]
-            | [(false,rest)]             -> []                ,(rest|>Seq.toList)
-            | [(true,take);(false,rest)] -> (take|>Seq.toList),(rest|>Seq.toList)
-            | [] | _                     -> []                ,[] //it's a little ugly to have the default case return blank, but it can't ever be reached when grouping by bool
+            let take=Seq.takeWhile f l|>Seq.toList
+            let skip=Seq.skipWhile f l|>Seq.toList
+            take,skip
         let ifSomeTrimmed (s:string)=
             match s.Trim() with
             |"" -> None
@@ -41,6 +38,25 @@ open System.Text.RegularExpressions
                 Some(groups)
             else
                 None
+        let joinLines (l:seq<string>) :string=
+            let value=l|>Seq.fold (fun acc v-> match acc with
+                                             |None -> Some(System.String.Format("{0}",v))
+                                             |Some(s) -> Some(System.String.Format("{0}\n{1}",s,v))) None
+            match value with
+            |None -> ""
+            |Some(s) -> s
+        let eraseLines (l:seq<string>) :string=
+            l|>Seq.fold (fun acc v-> System.String.Format("{0}{1}",acc,v)) ""
+        let removeWhitespace (s:string) :string=
+            Regex.Replace(s.Trim(),">\s+<","><")
+        let objToKvp o=
+            o.GetType().GetProperties()
+            |>Array.map (fun pi->pi.Name,pi.GetMethod.Invoke(o,[||]))
+            |>Array.collect (fun (k,v) -> match v with
+                                          | null -> [||]
+                                          | :? string as s -> [|k,s|]
+                                          | _ -> [||])
+            |>Array.toList
         //active patterns
         let (|Prefix|_|) (p:string) (s:string) =
             if s.StartsWith(p) then

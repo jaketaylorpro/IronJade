@@ -1,10 +1,5 @@
 ﻿namespace IronJade
-    module LexTag=
-        type LexTagValue = {Name:string;Attributes:List<string*Option<string>>;LexInnerTag:LexInnerTag.LexInnerTag}
-        type LexTag=
-            |LexTagProper of LexTagValue
-            |LexTagError of string //an error detected at the tag level
-            |LexTagInnerError of string //an error detected at the inner tag level
+    module LexTagBuilder=
         let buildLexTag (line:string)=
             let compileAttributes (id:Option<List<string>>) (classes:Option<List<string>>) (attrN:Option<List<string>>) (attrV:Option<List<string>>) :List<string*Option<string>>=
                 let idPair=match id with //TODO handle additional cases with error types
@@ -30,7 +25,7 @@
                                             (Map.tryFind Constants.Regex.GROUP_ATTRN map) 
                                             (Map.tryFind Constants.Regex.GROUP_ATTRV map))
                            let textMatches=(Map.tryFind Constants.Regex.GROUP_TEXT map)
-                           let innerLexTag= LexInnerTag.buildLexInnerTag (match textMatches with //TODO handle additional cases with error types
+                           let innerLexTag= LexInnerTagBuilder.buildLexInnerTag (match textMatches with //TODO handle additional cases with error types
                                                                           | None|Some([]) -> ""
                                                                           | Some([s]) ->s)
                            match innerLexTag with

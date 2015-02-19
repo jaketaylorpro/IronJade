@@ -1,24 +1,39 @@
 ﻿namespace IronJade
+open System.Text.RegularExpressions
     module Lexer=
-        let lexLines (lines:seq<string>) :LexNode.LexNode=
-            let readLines (lines:seq<string>) :List<int*int*string>=
+        let detectIndentationType (lines:seq<string>)= //TODO improve this
+            let firstIndentedLine= lines|>Seq.tryFind (fun line ->
+                                                                    let fc=line.Chars 0 //f# is lazy so this should only be evaled if line<>""
+                                                                    line<>"" && (fc='\t'||fc=' '))
+            match firstIndentedLine with
+                |None -> Tab
+                |Some(line) when (line.Chars 0) = '\t' -> Tab
+                |Some(line) -> let numSpaces=line.ToCharArray()|>Seq.takeWhile (fun c->c=' ')|>Seq.length
+                               Space(numSpaces)
+        let lexLines (lines:seq<string>) :LexNode=
+            let readLines (lines:seq<string>) (indentationType:Indentation) :List<int*int*string>=
                 lines //read each line, assign it a number, and an indentation
-                |>Seq.mapi (fun lineNumber l->let tabCount=l.ToCharArray()|>Seq.takeWhile (fun c->c='\t')|>Seq.length
-                                              let line= l.TrimStart()
+                |>Seq.mapi (fun lineNumber l->let tabCount,line= match indentationType with
+                                                                 | Indentation.Tab ->
+                                                                    (l.ToCharArray()|>Seq.takeWhile (fun c->c='\t')|>Seq.length),(l.TrimStart([|'\t'|]))
+                                                                 | Indentation.Space(n) ->
+                                                                     let totalSpaces=l.ToCharArray()|>Seq.takeWhile (fun c->c=' ')|>Seq.length
+                                                                     let totalTabs=totalSpaces/n
+                                                                     totalTabs,l.Substring(totalTabs*n)
                                               lineNumber,tabCount,line)
                 |>Seq.toList
-            let rec groupLines (lines:List<int*int*string>) (nodes:List<LexNode.LexNode>) (inTextBlock:bool) :List<LexNode.LexNode>=
+            let rec groupLines (lines:List<int*int*string>) (nodes:List<LexNode>) (inTextBlock:bool) :List<LexNode>=
                 match lines with
                 | [] -> //done, no lines left to process
                     nodes
                 | (ln,ind,line)::_ ->
-                    let lexLine=LexLine.buildLexLine line inTextBlock
+                    let lexLine=LexLineBuilder.buildLexLine line inTextBlock
                     let indentedLines,restLines=
                         lines.Tail
                         |>Util.takeWhileAndRest (fun (_,i,_) -> i>ind)
                     match lexLine with
                     //first handle non nestible types
-                    | LexLine.Root //root should not appear here so we'll treat it as not nestble
+                    | LexLine.Root(_) //root should not appear here so we'll treat it as not nestble
                     | LexLine.DocType(_) //doctype shouldn't be nested
                     | LexLine.TextLine(_) //a pipe-prefixed line of text shouldn't be nested
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=LexInnerTag.Inline(_)})) //a tag with inline text can't be nested
@@ -34,6 +49,7 @@
                     | LexLine.TextBlockLine(s)
                         -> let childNodes=groupLines indentedLines [] true
                            groupLines restLines ({LexLine=lexLine;ChildNodes=childNodes;LineNumber=ln;Indentation=ind}::nodes) true
-            {LexLine=LexLine.Root;ChildNodes=(groupLines (readLines lines) [] false);LineNumber=(-1);Indentation=(-1)}
+            let indType=detectIndentationType lines
+            {LexLine=LexLine.Root(indType,NotCompiled);ChildNodes=(groupLines (readLines lines indType) [] false);LineNumber=(-1);Indentation=(-1)}
 
         

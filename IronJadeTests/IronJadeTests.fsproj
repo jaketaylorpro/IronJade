@@ -82,14 +82,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SampleIronJadeTests.fs" />
-    <None Include="Script.fsx" />
-    <None Include="packages.config" />
-    <None Include="App.config" />
     <Compile Include="LexerTests.fs" />
     <Compile Include="CompilerTests.fs" />
     <Compile Include="ComprehensiveTests.fs" />
     <Compile Include="UtilTests.fs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IronJade\IronJade.fsproj">

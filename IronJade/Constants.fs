@@ -32,6 +32,7 @@
             let GROUP_ATTRN="attrn"
             let GROUP_ATTRV="attrv"
             let GROUP_TEXT="text"
+            let TAB_LINE="^[\\t\w].*$"
         module Text=
             let ERR_NO_MATCH_P1="expression:`{0}` did not match a supported pattern"
             let FAIL_IMPOSSIBLE_REGEX_MATCH="unexpected regex capturing is causing an unforseen match case"

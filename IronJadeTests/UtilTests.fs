@@ -50,3 +50,11 @@ open IronJade
             let expected = ["0",[testString];"start",[];"mid",["bc"];"end",["f";"g";"h"]]|>Map.ofList
             test <@Util.getRegexGroupsByName yesPattern testString = Some(expected)@>
             test <@Util.getRegexGroupsByName noPattern testString = None@>
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``takewhile test`` () :unit=
+            let full=[1;2;3;10;1;2;3]
+            let f = (fun i->i<10)
+            let take=[1;2;3]
+            let rest=[10;1;2;3]
+            test <@(Util.takeWhileAndRest f full) = (take,rest)@>
