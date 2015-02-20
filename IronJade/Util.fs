@@ -1,5 +1,6 @@
 ﻿namespace IronJade
 open System.Text.RegularExpressions
+open Newtonsoft.Json
     module Util=
         let mapfoldi (f:'S->int->'a->'b*'S) (s:'S) (l:List<'a>) :List<'b>*'S=
             let rec h s i l lr=
@@ -49,14 +50,20 @@ open System.Text.RegularExpressions
             l|>Seq.fold (fun acc v-> System.String.Format("{0}{1}",acc,v)) ""
         let removeWhitespace (s:string) :string=
             Regex.Replace(s.Trim(),">\s+<","><")
-        let objToKvp o=
-            o.GetType().GetProperties()
-            |>Array.map (fun pi->pi.Name,pi.GetMethod.Invoke(o,[||]))
-            |>Array.collect (fun (k,v) -> match v with
-                                          | null -> [||]
-                                          | :? string as s -> [|k,s|]
-                                          | _ -> [||])
+        let jobjToKvp (o:Linq.JObject) :List<string*obj>=
+            (System.Linq.Enumerable.ToList (o.Properties()))
+            |>Seq.map(fun p->p.Name,p.Value.ToObject(typeof<System.Object>))
+            |>Seq.toList
+        let objToKvp (o:obj) :List<string*obj>=
+            let t=o.GetType()
+            let props=t.GetFields()
+            props
+            |>Array.map (fun pi->pi.Name,pi.GetValue(o))
             |>Array.toList
+            (*let props=o.GetType().GetProperties()
+            props
+            |>Array.map (fun pi->pi.Name,pi.GetMethod.Invoke(o,[||]))
+            |>Array.toList*)
         //active patterns
         let (|Prefix|_|) (p:string) (s:string) =
             if s.StartsWith(p) then

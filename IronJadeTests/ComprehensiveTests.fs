@@ -32,15 +32,19 @@ open Newtonsoft.Json
             
             let env=if System.IO.File.Exists(jsonFilePath)
                     then
-                        JsonConvert.DeserializeObject(System.IO.File.ReadAllLines(jsonFilePath)|>Util.joinLines)
-                        |>Util.objToKvp
+                        JsonConvert.DeserializeObject(System.IO.File.ReadAllLines(jsonFilePath)|>Util.joinLines):?>Linq.JObject
+                        |>Util.jobjToKvp
                     else
                         []
             test <@ t jadeLines env= htmlContents @>
-
+            
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
         let ``demo_0 code``() =
             comprehensiveTester "demo_0"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``demo_1 code``() =
+            comprehensiveTester "demo_1"
 
 

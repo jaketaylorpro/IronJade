@@ -58,3 +58,10 @@ open IronJade
             let take=[1;2;3]
             let rest=[10;1;2;3]
             test <@(Util.takeWhileAndRest f full) = (take,rest)@>
+
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``objToKvp test`` () :unit=
+            let o:Linq.JObject=JsonConvert.DeserializeObject("{i:0,a:'test'}"):?>Linq.JObject
+            let kvp:List<string*obj>=["i",0L:>obj;"a","test":>obj]//we need to explicity call i a long because that is the default integer type for json.net
+            test <@(Util.jobjToKvp o) = kvp@>

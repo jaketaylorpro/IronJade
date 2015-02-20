@@ -1,9 +1,13 @@
 ﻿namespace IronJade
 open IronJade
     module Compiler=
-        let compileString (env:List<string*string>) (s:string) :string=
-            List.fold (fun (acc:string) (n,v) ->acc.Replace("#{"+n+"}",v)) s env
-        let compileLexNode (env:List<string*string>) (rootNode:LexNode) :LexNode=
+        let compileString (env:List<string*obj>) (s:string) :string=
+            List.fold (fun (acc:string) (n,v:obj) ->let rep=match v with
+                                                            | null -> ""
+                                                            | :? string as s -> s
+                                                            | _ -> v.ToString() //TODO handle custom tostring operations
+                                                    acc.Replace("#{"+n+"}",rep)) s env
+        let compileLexNode (env:List<string*obj>) (rootNode:LexNode) :LexNode=
             let compileStringWithEnv = compileString env
             let compileOptStringWithEnv text= match text with
                                               |None -> None

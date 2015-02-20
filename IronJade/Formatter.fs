@@ -17,7 +17,7 @@ open HtmlAgilityPack
                     ignore (parent.contents.AppendChild(doc.contents.CreateTextNode(text)))
                 |LexLine.Root(_,_) -> ignore (hchildren n parent)
                 |LexLine.Tag(tag) -> match tag with
-                                     |LexTag.LexTagError(_)|LexTag.LexTagInnerError(_)-> ()
+                                     |LexTag.LexTagError(errorMessage)|LexTag.LexTagInnerError(errorMessage)-> failwith (System.String.Format(Constants.Text.FAIL_TAG_ERROR_P2,n.LineNumber,errorMessage))
                                      |LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=_}) ->()//TODO we need to create commentNodes and insert them into the doc
                                      |LexTag.LexTagProper({Name="//-";Attributes=_;LexInnerTag=_}) ->()
                                      |LexTag.LexTagProper({Name=name;Attributes=attributes;LexInnerTag=lexInnerTag})->
