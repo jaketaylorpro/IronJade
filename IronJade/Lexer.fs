@@ -25,7 +25,7 @@ open System.Text.RegularExpressions
             let rec groupLines (lines:List<int*int*string>) (nodes:List<LexNode>) (inTextBlock:bool) :List<LexNode>=
                 match lines with
                 | [] -> //done, no lines left to process
-                    nodes
+                    nodes|>List.rev
                 | (ln,ind,line)::_ ->
                     let lexLine=LexLineBuilder.buildLexLine line inTextBlock
                     let indentedLines,restLines=
