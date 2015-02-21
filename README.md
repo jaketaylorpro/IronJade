@@ -3,7 +3,7 @@ Implementation of the jade templating language in F#
 The goal is to implement all of the jade language, but we are going to start with a modest feature set and work our way up. 
 ## Roadmap
 
-### v0.1
+### v0.0.9
 * no javascript, conditionals, iteration
   * except single level variable environment passing
   * except string interpolation of attributes and text by variable in environment
@@ -22,7 +22,7 @@ The goal is to implement all of the jade language, but we are going to start wit
 * simple indentation detection
   * supports tab or any number of spaces based on the first indented line
 
-### v0.1.1
+### v0.1.0
 * comment support
 * full tag support
   * inline nested tags
@@ -32,7 +32,10 @@ The goal is to implement all of the jade language, but we are going to start wit
   * will accept only matching single or double quotes
 * good error handling
 * full indentation checking and validation
-* 
+
+### v0.1.1
+* asp.net mvc 5 integration
+
 ### v0.2
 * inheritance, include and mixin support
 
@@ -44,4 +47,4 @@ The goal is to implement all of the jade language, but we are going to start wit
 * full javascript support
 * full attribute support
 
-### v1.0 feature compatible with jade language when configured to be
+### v1.0 feature compatible with jade language when configured to be so
