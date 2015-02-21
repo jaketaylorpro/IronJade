@@ -40,11 +40,19 @@ open Newtonsoft.Json
             
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
-        let ``demo_0 code``() =
+        let ``demo_0``() =
             comprehensiveTester "demo_0"
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
-        let ``demo_1 code``() =
+        let ``demo_1``() =
             comprehensiveTester "demo_1"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``demo_2``() =
+            comprehensiveTester "demo_2"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``pipped_text``() =
+            comprehensiveTester "pipped_text"
 
 
