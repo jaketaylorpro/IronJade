@@ -1,9 +1,14 @@
 # IronJade
 Implementation of the jade templating language in F#
 The goal is to implement all of the jade language, but we are going to start with a modest feature set and work our way up. 
+## Issues
+Please submit 
+* [bug](https://github.com/jaketaylorpro/IronJade/issues/new?title=when%20%3Cattempting%20behavior%3E%2C%20%3Cerror%3E%20occurs%2C%20instead%20of%20%3Cexpected%3E&body=%23%23%23%20example%0A%60%60%60jade%0A%60%60%60%0A%0A%23%23%23%20error%20result%0A%60%60%60html%0A%60%60%60%0A%23%23%23%20expected%0A%60%60%60html%0A%60%60%60%0A%0A%23%23%23%20possible%20cause%0A*%20%0A%0A%23%23%23%20suggested%20fix%0A*%20)
+* [feature requests](https://github.com/jaketaylorpro/IronJade/issues/new?title=in%20order%20to%20%3Cbenefit%3E%2C%20as%20a%20%3Crole%3E%2C%20i%20want%20%3Cgoal%3E) 
+
 ## Roadmap
 
-### v0.1
+### v0.0.9
 * no javascript, conditionals, iteration
   * except single level variable environment passing
   * except string interpolation of attributes and text by variable in environment
@@ -22,7 +27,7 @@ The goal is to implement all of the jade language, but we are going to start wit
 * simple indentation detection
   * supports tab or any number of spaces based on the first indented line
 
-### v0.1.1
+### v0.1.0
 * comment support
 * full tag support
   * inline nested tags
@@ -32,7 +37,10 @@ The goal is to implement all of the jade language, but we are going to start wit
   * will accept only matching single or double quotes
 * good error handling
 * full indentation checking and validation
-* 
+
+### v0.1.1
+* asp.net mvc 5 integration
+
 ### v0.2
 * inheritance, include and mixin support
 
@@ -44,4 +52,4 @@ The goal is to implement all of the jade language, but we are going to start wit
 * full javascript support
 * full attribute support
 
-### v1.0 feature compatible with jade language when configured to be
+### v1.0 feature compatible with jade language when configured to be so
