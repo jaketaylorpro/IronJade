@@ -12,7 +12,9 @@
                               |None |Some([]) -> []
                               |Some(_) ->List.zip attrN.Value (attrV.Value|>List.map Util.ifSomeTrimmed)
                 List.concat [idPair;classPair;attrPairs]
-            let matchMap=Util.getRegexGroupsByName Constants.Regex.FULL_TAG_PATTERN line
+            let matchMap=[Constants.Regex.FULL_TAG_PATTERN;Constants.Regex.FULL_DIV_ID_PATTERN;Constants.Regex.FULL_DIV_CLASS_PATTERN]
+                         |>List.map (fun p-> Util.getRegexGroupsByName p line)
+                         |>List.tryPick (fun m->m)
             match matchMap with
             | None -> LexTagError(System.String.Format(Constants.Text.ERR_NO_MATCH_P1,line))
             | Some(map) -> let nameMatches=Map.tryFind Constants.Regex.GROUP_NAME map
@@ -31,12 +33,12 @@
                            match innerLexTag with
                            |LexInnerTag.InnerLexTagError(s) -> LexTagInnerError(s)
                            | _ -> LexTagProper({Name=name;Attributes=attributes;LexInnerTag=innerLexTag})
+        let buildGenericCommentLexTag t (s:string)=
+            match (s.Trim()) with
+            | "" -> LexTagProper({Name=(t);Attributes=[];LexInnerTag=LexInnerTag.BlockText})
+            | _ -> LexTagProper({Name=(t);Attributes=[];LexInnerTag=LexInnerTag.Inline(s)})
         let buildCommentLexTag s=
-            match s with
-            | ""|"-" -> 
-                LexTagProper({Name=("//"+s);Attributes=[];LexInnerTag=LexInnerTag.BlockText})
-            | Util.Regex "(?:(- )|( ))(.*)" [prefix;suffix] -> 
-                let tag=if suffix = "" then LexInnerTag.BlockText else LexInnerTag.Inline(suffix)
-                LexTagProper({Name=("//"+prefix);Attributes=[];LexInnerTag=tag})
-            | _ ->
-                LexTagError(System.String.Format(Constants.Text.ERR_NO_MATCH_P1,"//s"))
+            buildGenericCommentLexTag "//" s
+        let buildHiddenCommentLexTag s=
+            buildGenericCommentLexTag "//-" s
+        

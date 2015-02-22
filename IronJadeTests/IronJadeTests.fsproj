@@ -78,9 +78,9 @@
     <Compile Include="CompilerTests.fs" />
     <Compile Include="ComprehensiveTests.fs" />
     <Compile Include="UtilTests.fs" />
-    <None Include="packages.config" />
-    <Content Include="app.config" />
     <Compile Include="ExploritoryTests.fs" />
+    <Compile Include="ConstantsTests.fs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsUnit.NUnit">
