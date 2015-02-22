@@ -2,6 +2,13 @@
 open HtmlAgilityPack
     module Formatter=
         let formatLexNode (rootNode:LexNode) :string=
+            let indType = match rootNode.LexLine with
+                          | LexLine.Root(ind,_) -> ind
+                          | _ -> failwith Constants.Text.FAIL_FORMAT_NON_ROOT_NODE
+            let reindentText (text:string) (ind:int) :string=
+                match indType with
+                |Indentation.Space(n) -> new System.String(' ',n*ind)+text
+                |Indentation.Tab -> new System.String('\t',ind)+text
             let mutable doc = new HtmlDocument()
             let rec h (n:LexNode) (parent:ref<HtmlNode>) (doc:ref<HtmlDocument>):unit=
                 let hchildren (n:LexNode) (parent:ref<HtmlNode>)=
@@ -14,7 +21,7 @@ open HtmlAgilityPack
                     let c=doc.contents.CreateComment(System.String.Format("<!DOCTYPE {0}>",t))
                     ignore (parent.contents.PrependChild(c))
                 |LexLine.TextBlockLine(text)|LexLine.TextLine(text) -> 
-                    ignore (parent.contents.AppendChild(doc.contents.CreateTextNode(text)))
+                    ignore (parent.contents.AppendChild(doc.contents.CreateTextNode("\n"+(reindentText text n.Indentation))))//TODO figure out rules about when to indent text and not
                 |LexLine.Root(_,_) -> ignore (hchildren n parent)
                 |LexLine.Tag(tag) -> match tag with
                                      |LexTag.LexTagError(errorMessage)|LexTag.LexTagInnerError(errorMessage)-> failwith (System.String.Format(Constants.Text.FAIL_TAG_ERROR_P2,n.LineNumber,errorMessage))
@@ -31,7 +38,7 @@ open HtmlAgilityPack
                                              ignore (e.AppendChild(doc.contents.CreateTextNode(text)) )
                                          |LexInnerTag.BlockText|LexInnerTag.Normal ->
                                              ignore (hchildren n (ref e))
-                                         |LexInnerTag.InnerLexTagError(_) -> ()
+                                         |LexInnerTag.InnerLexTagError(_) -> () //TODO this isn't reachable, all inner errors cause the tag to not be a LexTagProper
             h rootNode (ref doc.DocumentNode) (ref doc)
             doc.DocumentNode.OuterHtml
 

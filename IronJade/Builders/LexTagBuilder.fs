@@ -17,8 +17,8 @@
             | None -> LexTagError(System.String.Format(Constants.Text.ERR_NO_MATCH_P1,line))
             | Some(map) -> let nameMatches=Map.tryFind Constants.Regex.GROUP_NAME map
                            let name= match nameMatches with //TODO handle additional cases with error types
-                                        | None|Some([]) -> "div"
-                                        | Some([s]) -> s //no need to support other matches on name, regex can only get one capture for the name pattern
+                                     | None|Some([]) -> "div"
+                                     | Some([s]) -> s //no need to support other matches on name, regex can only get one capture for the name pattern
                            let attributes=(compileAttributes 
                                             (Map.tryFind Constants.Regex.GROUP_ID map) 
                                             (Map.tryFind Constants.Regex.GROUP_CLASS map) 
@@ -26,8 +26,8 @@
                                             (Map.tryFind Constants.Regex.GROUP_ATTRV map))
                            let textMatches=(Map.tryFind Constants.Regex.GROUP_TEXT map)
                            let innerLexTag= LexInnerTagBuilder.buildLexInnerTag (match textMatches with //TODO handle additional cases with error types
-                                                                          | None|Some([]) -> ""
-                                                                          | Some([s]) ->s)
+                                                                                 | None|Some([]) -> ""
+                                                                                 | Some([s]) ->s)
                            match innerLexTag with
                            |LexInnerTag.InnerLexTagError(s) -> LexTagInnerError(s)
                            | _ -> LexTagProper({Name=name;Attributes=attributes;LexInnerTag=innerLexTag})

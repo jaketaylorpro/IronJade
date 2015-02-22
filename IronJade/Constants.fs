@@ -38,3 +38,4 @@
             let ERR_NO_MATCH_P1="expression:\n\t{0} did not match a supported pattern"
             let FAIL_TAG_ERROR_P2="there was an error parsing a tag<line:{0}>:\n\t{1}"
             let FAIL_IMPOSSIBLE_REGEX_MATCH="unexpected regex capturing is causing an unforseen match case"
+            let FAIL_FORMAT_NON_ROOT_NODE="formatLexNode called on a non-root lexnode"

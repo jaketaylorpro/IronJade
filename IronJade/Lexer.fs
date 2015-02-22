@@ -1,6 +1,11 @@
 ﻿namespace IronJade
 open System.Text.RegularExpressions
     module Lexer=
+        let reindentNestedTextBlockLines (lines:List<int*int*string>) (indType:Indentation)=
+            let replacementIndentation=match indType with
+                                       |Indentation.Space(n) -> new System.String(' ',n)
+                                       |Indentation.Tab -> "\t"
+            lines|>List.map (fun (ln,ind,text)->ln,(ind-1),(replacementIndentation+text))
         let detectIndentationType (lines:seq<string>)= //TODO improve this
             let firstIndentedLine= lines|>Seq.tryFind (fun line ->
                                                                     let fc=line.Chars 0 //f# is lazy so this should only be evaled if line<>""
@@ -11,9 +16,9 @@ open System.Text.RegularExpressions
                 |Some(line) -> let numSpaces=line.ToCharArray()|>Seq.takeWhile (fun c->c=' ')|>Seq.length
                                Space(numSpaces)
         let lexLines (lines:seq<string>) :LexNode=
-            let readLines (lines:seq<string>) (indentationType:Indentation) :List<int*int*string>=
+            let readLines (lines:seq<string>) (indType:Indentation) :List<int*int*string>=
                 lines //read each line, assign it a number, and an indentation
-                |>Seq.mapi (fun lineNumber l->let tabCount,line= match indentationType with
+                |>Seq.mapi (fun lineNumber l->let tabCount,line= match indType with
                                                                  | Indentation.Tab ->
                                                                     (l.ToCharArray()|>Seq.takeWhile (fun c->c='\t')|>Seq.length),(l.TrimStart([|'\t'|]))
                                                                  | Indentation.Space(n) ->
@@ -22,7 +27,7 @@ open System.Text.RegularExpressions
                                                                      totalTabs,l.Substring(totalTabs*n)
                                               lineNumber,tabCount,line)
                 |>Seq.toList
-            let rec groupLines (lines:List<int*int*string>) (nodes:List<LexNode>) (inTextBlock:bool) :List<LexNode>=
+            let rec groupLines (lines:List<int*int*string>) (nodes:List<LexNode>) (inTextBlock:bool) (indType:Indentation) :List<LexNode>=
                 match lines with
                 | [] -> //done, no lines left to process
                     nodes|>List.rev
@@ -40,16 +45,15 @@ open System.Text.RegularExpressions
                     | LexLine.Tag(LexTag.LexTagError(_)) //a tag with an error will have it's indented children ignored
                     | LexLine.Tag(LexTag.LexTagInnerError(_)) //a tag with an error will have it's indented children ignored
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=LexInnerTag.InnerLexTagError(_)})) //a tag with an inner error will have it's indented children ignored
-                        -> groupLines restLines ({LexLine=lexLine;ChildNodes=[];LineNumber=ln;Indentation=ind}::nodes) false
+                        -> groupLines restLines ({LexLine=lexLine;ChildNodes=[];LineNumber=ln;Indentation=ind}::nodes) false indType
                     //now handle nestabile types
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=normalOrBlock}))
-                        -> let childNodes=groupLines indentedLines [] (normalOrBlock = LexInnerTag.BlockText)
-                           groupLines restLines ({LexLine=lexLine;ChildNodes=childNodes;LineNumber=ln;Indentation=ind}::nodes) false
+                        -> let childNodes=groupLines indentedLines [] (normalOrBlock = LexInnerTag.BlockText) indType
+                           groupLines restLines ({LexLine=lexLine;ChildNodes=childNodes;LineNumber=ln;Indentation=ind}::nodes) false indType
                     //now handle text block lines
                     | LexLine.TextBlockLine(s)
-                        -> let childNodes=groupLines indentedLines [] true
-                           groupLines restLines ({LexLine=lexLine;ChildNodes=childNodes;LineNumber=ln;Indentation=ind}::nodes) true
+                        -> groupLines (List.append (reindentNestedTextBlockLines indentedLines indType) restLines) ({LexLine=lexLine;ChildNodes=[];LineNumber=ln;Indentation=ind}::nodes) true indType
             let indType=detectIndentationType lines
-            {LexLine=LexLine.Root(indType,NotCompiled);ChildNodes=(groupLines (readLines lines indType) [] false);LineNumber=(-1);Indentation=(-1)}
+            {LexLine=LexLine.Root(indType,NotCompiled);ChildNodes=(groupLines (readLines lines indType) [] false indType);LineNumber=(-1);Indentation=(-1)}
 
         

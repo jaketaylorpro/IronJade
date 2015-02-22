@@ -41,8 +41,8 @@ open Newtonsoft.Json
                 None
         let joinLines (l:seq<string>) :string=
             let value=l|>Seq.fold (fun acc v-> match acc with
-                                             |None -> Some(System.String.Format("{0}",v))
-                                             |Some(s) -> Some(System.String.Format("{0}\n{1}",s,v))) None
+                                               |None -> Some(System.String.Format("{0}",v))
+                                               |Some(s) -> Some(System.String.Format("{0}\n{1}",s,v))) None
             match value with
             |None -> ""
             |Some(s) -> s
@@ -50,6 +50,11 @@ open Newtonsoft.Json
             l|>Seq.fold (fun acc v-> System.String.Format("{0}{1}",acc,v)) ""
         let removeWhitespace (s:string) :string=
             Regex.Replace(s.Trim(),">\s+<","><")
+        let removeAllNewlines (s:string) :string=
+            Regex.Replace(s,"\n","")
+        let htmlTrim (s:string) :string=
+            let s1=Regex.Replace(s,">\s+([^\s])",">$1")
+            Regex.Replace(s1,"([^\s])\s+<","$1<")
         let jobjToKvp (o:Linq.JObject) :List<string*obj>=
             (System.Linq.Enumerable.ToList (o.Properties()))
             |>Seq.map(fun p->p.Name,p.Value.ToObject(typeof<System.Object>))

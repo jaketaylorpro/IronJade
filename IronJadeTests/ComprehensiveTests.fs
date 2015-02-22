@@ -15,6 +15,9 @@ open Newtonsoft.Json
             |> lexLines
             |> compileLexNode e
             |> formatLexNode
+            |>Util.removeWhitespace
+            |>Util.removeAllNewlines
+            |>Util.htmlTrim
             
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
@@ -27,8 +30,10 @@ open Newtonsoft.Json
             let htmlFilePath=System.String.Format("../../tests/{0}.html",testName)
             let jadeLines=System.IO.File.ReadAllLines(jadeFilePath)
             let htmlContents=System.IO.File.ReadAllLines(htmlFilePath)
-                             |>Util.joinLines//TODO we want it to look like this eventually
+                             |>Util.joinLines//TODO we want it to look like this eventually without the two proceding steps
                              |>Util.removeWhitespace
+                             |>Util.removeAllNewlines
+                             |>Util.htmlTrim
             
             let env=if System.IO.File.Exists(jsonFilePath)
                     then
