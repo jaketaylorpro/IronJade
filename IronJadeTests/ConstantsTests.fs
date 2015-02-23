@@ -16,7 +16,7 @@ open IronJade
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,id`` () :unit=
-            testFullTagPattern "table#tableid"            
+            testFullTagPattern "table#tableid"
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,classes`` () :unit=
@@ -33,7 +33,7 @@ open IronJade
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,id with text`` () :unit=
-            testFullTagPattern "table#tableid text"            
+            testFullTagPattern "table#tableid text"
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,classes with text`` () :unit=
@@ -50,7 +50,7 @@ open IronJade
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,id with attr`` () :unit=
-            testFullTagPattern "table#tableid(one=\"one\",two=\"two\")"            
+            testFullTagPattern "table#tableid(one=\"one\",two=\"two\")"
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,classes with attr`` () :unit=
@@ -67,7 +67,7 @@ open IronJade
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,id with attr,block`` () :unit=
-            testFullTagPattern "table#tableid(one=\"one\",two=\"two\")."            
+            testFullTagPattern "table#tableid(one=\"one\",two=\"two\")."
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,classes with attr,block`` () :unit=
@@ -84,7 +84,7 @@ open IronJade
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,id with attr,text`` () :unit=
-            testFullTagPattern "table#tableid(one=\"one\",two=\"two\") text"            
+            testFullTagPattern "table#tableid(one=\"one\",two=\"two\") text"
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
         let ``tag pattern tag,classes with attr,text`` () :unit=
@@ -96,18 +96,6 @@ open IronJade
             
         let testIdTagPattern input=
             test <@ Regex.IsMatch(input,Constants.Regex.FULL_DIV_ID_PATTERN)  @>
-        [<Test>]
-        [<CategoryAttribute("Exploratory")>]
-        let ``id pattern test1`` () :unit=
-            test <@ Regex.IsMatch("#tableid","^\#(?<id>[a-zA-Z][a-zA-Z0-9_-]*)$") @>
-        [<Test>]
-        [<CategoryAttribute("Exploratory")>]
-        let ``id pattern test2`` () :unit=
-            test <@ Regex.IsMatch("#tableid","^\#(?<id>[a-zA-Z][a-zA-Z0-9_-]*)$") @>
-        [<Test>]
-        [<CategoryAttribute("Exploratory")>]
-        let ``id pattern test simplified`` () :unit=
-            test <@ Regex.IsMatch("#tableid","^\#[a-zA-Z][a-zA-Z0-9_-]*$") @>
         //no attr or text
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
@@ -153,3 +141,31 @@ open IronJade
         [<CategoryAttribute("Constants.Regex")>]
         let ``id pattern id,classes with attr,text`` () :unit=
             testIdTagPattern "#tableid.classa.classb.classc(one=\"one\",two=\"two\") text"
+            
+        let testClassPattern input=
+            test <@ Regex.IsMatch(input,Constants.Regex.FULL_DIV_CLASS_PATTERN)  @>
+        //no attr or text
+        [<Test>]
+        [<CategoryAttribute("Constants.Regex")>]
+        let ``class pattern classes`` () :unit=
+            testClassPattern ".classa.classb.classc"
+        //with text no attr
+        [<Test>]
+        [<CategoryAttribute("Constants.Regex")>]
+        let ``class pattern classes with text`` () :unit=
+            testClassPattern ".classa.classb.classc text"
+        //with attr no text
+        [<Test>]
+        [<CategoryAttribute("Constants.Regex")>]
+        let ``class pattern classes with attr`` () :unit=
+            testClassPattern ".classa.classb.classc(one=\"one\",two=\"two\")"
+        //with attr and block
+        [<Test>]
+        [<CategoryAttribute("Constants.Regex")>]
+        let ``class pattern classes with attr,block`` () :unit=
+            testClassPattern ".classa.classb.classc(one=\"one\",two=\"two\")."
+        //with text and attr
+        [<Test>]
+        [<CategoryAttribute("Constants.Regex")>]
+        let ``class pattern classes with attr,text`` () :unit=
+            testClassPattern ".classa.classb.classc(one=\"one\",two=\"two\") text"
