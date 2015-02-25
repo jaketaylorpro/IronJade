@@ -33,12 +33,12 @@
                            match innerLexTag with
                            |LexInnerTag.InnerLexTagError(s) -> LexTagInnerError(s)
                            | _ -> LexTagProper({Name=name;Attributes=attributes;LexInnerTag=innerLexTag})
-        let buildGenericCommentLexTag t (s:string)=
-            match (s.Trim()) with
-            | "" -> LexTagProper({Name=(t);Attributes=[];LexInnerTag=LexInnerTag.BlockText})
-            | _ -> LexTagProper({Name=(t);Attributes=[];LexInnerTag=LexInnerTag.Inline(s)})
-        let buildCommentLexTag s=
-            buildGenericCommentLexTag "//" s
-        let buildHiddenCommentLexTag s=
-            buildGenericCommentLexTag "//-" s
+        let buildCommentLexTag (s:string)=
+            LexTagProper({Name=("//");Attributes=[];LexInnerTag=LexInnerTag.Inline(s.Trim())})
+        let buildHiddenCommentLexTag (s:string)=
+            LexTagProper({Name=("//-");Attributes=[];LexInnerTag=LexInnerTag.Inline(s.Trim())})
+        let buildBlockCommentLexTag=            
+            LexTagProper({Name=("//");Attributes=[];LexInnerTag=LexInnerTag.BlockText})
+        let buildHiddenBlockCommentLexTag=
+            LexTagProper({Name=("//-");Attributes=[];LexInnerTag=LexInnerTag.BlockText})
         

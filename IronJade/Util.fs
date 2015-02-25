@@ -55,6 +55,9 @@ open Newtonsoft.Json
         let htmlTrim (s:string) :string=
             let s1=Regex.Replace(s,">\s+([^\s])",">$1")
             Regex.Replace(s1,"([^\s])\s+<","$1<")
+        let htmlCommentTrim (s:string) :string=
+            let s1=Regex.Replace(s,"<!--\s+","<!--")
+            Regex.Replace(s1,"\s+-->","-->")
         let jobjToKvp (o:Linq.JObject) :List<string*obj>=
             (System.Linq.Enumerable.ToList (o.Properties()))
             |>Seq.map(fun p->p.Name,p.Value.ToObject(typeof<System.Object>))

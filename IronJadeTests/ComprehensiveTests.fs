@@ -18,6 +18,7 @@ open Newtonsoft.Json
             |>Util.removeWhitespace
             |>Util.removeAllNewlines
             |>Util.htmlTrim
+            |>Util.htmlCommentTrim
             
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
@@ -34,6 +35,7 @@ open Newtonsoft.Json
                              |>Util.removeWhitespace
                              |>Util.removeAllNewlines
                              |>Util.htmlTrim
+                             |>Util.htmlCommentTrim
             
             let env=if System.IO.File.Exists(jsonFilePath)
                     then
@@ -59,5 +61,21 @@ open Newtonsoft.Json
         [<CategoryAttribute("Comprehensive")>]
         let ``pipped_text``() =
             comprehensiveTester "pipped_text"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``comments``() =
+            comprehensiveTester "comments"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``hidden comments``() =
+            comprehensiveTester "comments_hidden"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``block comments``() =
+            comprehensiveTester "block_comments"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``hidden block comments``() =
+            comprehensiveTester "block_comments_hidden"
 
 

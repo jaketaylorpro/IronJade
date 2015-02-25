@@ -25,7 +25,21 @@ open HtmlAgilityPack
                 |LexLine.Root(_,_) -> ignore (hchildren n parent)
                 |LexLine.Tag(tag) -> match tag with
                                      |LexTag.LexTagError(errorMessage)|LexTag.LexTagInnerError(errorMessage)-> failwith (System.String.Format(Constants.Text.FAIL_TAG_ERROR_P2,n.LineNumber,errorMessage))
-                                     |LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=_}) ->()//TODO we need to create commentNodes and insert them into the doc
+                                     |LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=LexInnerTag.Inline(text)}) ->
+                                        let c=doc.contents.CreateComment(System.String.Format("<!--{0}-->",text))
+                                        ignore (parent.contents.AppendChild(c))
+                                     |LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=LexInnerTag.BlockText}) ->
+                                        let text=n.ChildNodes
+                                                 |>List.fold (fun acc cn->  let newline=match acc with
+                                                                                        |"" -> ""
+                                                                                        |_ -> "\n"
+                                                                            let ct = match cn.LexLine with
+                                                                                     |LexLine.TextBlockLine(t) -> (reindentText t n.Indentation)
+                                                                                     |_ -> failwith (System.String.Format(Constants.Text.FAIL_COMMENT_BLOCK_INVALID_P1,cn.LexLine.ToString()))
+                                                                            acc+newline+ct) ""
+                                        let c=doc.contents.CreateComment(System.String.Format("<!--{0}-->",text))
+                                        ignore (parent.contents.AppendChild(c))
+
                                      |LexTag.LexTagProper({Name="//-";Attributes=_;LexInnerTag=_}) ->()
                                      |LexTag.LexTagProper({Name=name;Attributes=attributes;LexInnerTag=lexInnerTag})->
                                          let mutable e=doc.contents.CreateElement name
