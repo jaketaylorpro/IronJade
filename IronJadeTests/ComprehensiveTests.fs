@@ -77,5 +77,13 @@ open Newtonsoft.Json
         [<CategoryAttribute("Comprehensive")>]
         let ``hidden block comments``() =
             comprehensiveTester "block_comments_hidden"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``self closing img``() =
+            comprehensiveTester "self_closing_img"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``self closing tags``() =
+            comprehensiveTester "self_closing_tags"
 
 

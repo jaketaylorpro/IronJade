@@ -10,6 +10,7 @@ open HtmlAgilityPack
                 |Indentation.Space(n) -> new System.String(' ',n*ind)+text
                 |Indentation.Tab -> new System.String('\t',ind)+text
             let mutable doc = new HtmlDocument()
+            doc.OptionWriteEmptyNodes <- true;
             let rec h (n:LexNode) (parent:ref<HtmlNode>) (doc:ref<HtmlDocument>):unit=
                 let hchildren (n:LexNode) (parent:ref<HtmlNode>)=
                     n.ChildNodes
