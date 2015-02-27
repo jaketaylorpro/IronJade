@@ -85,5 +85,13 @@ open Newtonsoft.Json
         [<CategoryAttribute("Comprehensive")>]
         let ``self closing tags``() =
             comprehensiveTester "self_closing_tags"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``inline tags``() =
+            comprehensiveTester "inline_tags"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``inline tag``() =
+            comprehensiveTester "inline_tag"
 
 

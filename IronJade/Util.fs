@@ -72,6 +72,11 @@ open Newtonsoft.Json
             props
             |>Array.map (fun pi->pi.Name,pi.GetMethod.Invoke(o,[||]))
             |>Array.toList*)
+        let rec foldWhile<'S,'A> (f:'S->'A->Option<'S>*'A) (state:'S) (acc:'A) :'A=
+            let (newState,newAcc) = f state acc
+            match newState with
+            |None -> newAcc
+            |Some(v) -> foldWhile f v newAcc
         //active patterns
         let (|Prefix|_|) (p:string) (s:string) =
             if s.StartsWith(p) then

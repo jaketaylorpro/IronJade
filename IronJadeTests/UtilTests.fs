@@ -65,3 +65,9 @@ open IronJade
             let o:Linq.JObject=JsonConvert.DeserializeObject("{i:0,a:'test'}"):?>Linq.JObject
             let kvp:List<string*obj>=["i",0L:>obj;"a","test":>obj]//we need to explicity call i a long because that is the default integer type for json.net
             test <@(Util.jobjToKvp o) = kvp@>
+        
+        
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``foldWhile test`` () :unit=
+            test <@ Util.foldWhile (fun i l->if i=0 then (None,l) else (Some(i-1),i::l)) 4 [] = [1;2;3;4] @>

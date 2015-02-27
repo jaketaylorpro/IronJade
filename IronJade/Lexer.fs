@@ -46,6 +46,12 @@ open System.Text.RegularExpressions
                     | LexLine.Tag(LexTag.LexTagInnerError(_)) //a tag with an error will have it's indented children ignored
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=LexInnerTag.InnerLexTagError(_)})) //a tag with an inner error will have it's indented children ignored
                         -> groupLines restLines ({LexLine=lexLine;ChildNodes=[];LineNumber=ln;Indentation=ind}::nodes) false indType
+                    //handle the inline nested case
+                    | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=LexInnerTag.NestedInline(s)}))
+                        -> let childChildNodes=groupLines indentedLines [] false indType
+                           //TODO now to recursivly add until we find a non nested tag
+                           let childNode={LexLine=LexLine.Tag(LexTagBuilder.buildLexTag s);ChildNodes=childChildNodes;LineNumber=ln;Indentation=ind+1}
+                           groupLines restLines ({LexLine=lexLine;ChildNodes=[childNode];LineNumber=ln;Indentation=ind}::nodes) false indType
                     //now handle nestabile types
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=normalOrBlock}))
                         -> let childNodes=groupLines indentedLines [] (normalOrBlock = LexInnerTag.BlockText) indType
