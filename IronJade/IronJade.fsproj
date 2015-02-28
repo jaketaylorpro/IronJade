@@ -49,8 +49,12 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Util.fs" />
-    <Compile Include="Constants.fs" />
+    <Compile Include="Util\UtilList.fs" />
+    <Compile Include="Util\UtilString.fs" />
+    <Compile Include="Util\UtilReflection.fs" />
+    <Compile Include="Util\UtilActivePatterns.fs" />
+    <Compile Include="Constants\ConstantsRegex.fs" />
+    <Compile Include="Constants\ConstantsText.fs" />
     <Compile Include="Types\Indentation.fs" />
     <Compile Include="Types\Compiled.fs" />
     <Compile Include="Types\LexInnerTag.fs" />

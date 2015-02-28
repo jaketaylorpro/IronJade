@@ -12,8 +12,8 @@
             match line with
             | "//" -> buildBlockCommentLexTag
             | "//-" -> buildHiddenBlockCommentLexTag
-            | Util.Prefix "// " rest -> buildCommentLexTag rest
-            | Util.Prefix "//- " rest -> buildHiddenCommentLexTag rest
+            | Util.ActivePattern.Prefix "// " rest -> buildCommentLexTag rest
+            | Util.ActivePattern.Prefix "//- " rest -> buildHiddenCommentLexTag rest
             | _ ->
                   let compileAttributes (id:Option<List<string>>) (classes:Option<List<string>>) (attrN:Option<List<string>>) (attrV:Option<List<string>>) :List<string*Option<string>>=
                       let idPair=match id with //TODO handle additional cases with error types
@@ -24,27 +24,32 @@
                                     |Some(classesv) ->[("class",Some(List.fold (fun acc c->if acc="" then c else acc+" "+c) "" classesv))]
                       let attrPairs=match attrN with
                                     |None |Some([]) -> []
-                                    |Some(_) ->List.zip attrN.Value (attrV.Value|>List.map Util.ifSomeTrimmed)
+                                    |Some(_) ->List.zip attrN.Value (attrV.Value|>List.map Util.String.ifSomeTrimmed)
                       List.concat [idPair;classPair;attrPairs]
 
-                  let matchMap=[Constants.Regex.FULL_TAG_PATTERN;Constants.Regex.FULL_DIV_ID_PATTERN;Constants.Regex.FULL_DIV_CLASS_PATTERN]
-                               |>List.map (fun p-> Util.getRegexGroupsByName p line)
-                               |>List.tryPick (fun m->m)
+                  let matchMap=Util.String.getRegexGroupsByName Constants.Regex.FullTagPattern line
                   match matchMap with
                   | None -> LexTagError(System.String.Format(Constants.Text.ERR_NO_MATCH_P1,line))
-                  | Some(map) -> let nameMatches=Map.tryFind Constants.Regex.GROUP_NAME map
+                  | Some(map) -> let nameMatches=Map.tryFind Constants.Regex.GroupName map
                                  let name= match nameMatches with //TODO handle additional cases with error types
                                            | None|Some([]) -> "div"
                                            | Some([s]) -> s //no need to support other matches on name, regex can only get one capture for the name pattern
                                  let attributes=(compileAttributes 
-                                                  (Map.tryFind Constants.Regex.GROUP_ID map) 
-                                                  (Map.tryFind Constants.Regex.GROUP_CLASS map) 
-                                                  (Map.tryFind Constants.Regex.GROUP_ATTRN map) 
-                                                  (Map.tryFind Constants.Regex.GROUP_ATTRV map))
-                                 let textMatches=(Map.tryFind Constants.Regex.GROUP_TEXT map)
-                                 let innerLexTag= LexInnerTagBuilder.buildLexInnerTag (match textMatches with //TODO handle additional cases with error types
-                                                                                       | None|Some([]) -> ""
-                                                                                       | Some([s]) ->s)
+                                                  (Map.tryFind Constants.Regex.GroupId map) 
+                                                  (Map.tryFind Constants.Regex.GroupClass map) 
+                                                  (Map.tryFind Constants.Regex.GroupAttrn map) 
+                                                  (Map.tryFind Constants.Regex.GroupAttrv map))
+                                 let textMatches=(Map.tryFind Constants.Regex.GroupText map)
+                                 let hasNestedTag= match (Map.tryFind Constants.Regex.GroupColon map) with //TODO handle error cases
+                                                   | None | Some([]) -> false
+                                                   | Some([":"]) -> true
+                                 let hasBlockText= match (Map.tryFind Constants.Regex.GroupDot map) with //TODO handle error cases
+                                                   | None | Some([]) -> false
+                                                   | Some(["."]) -> true
+                                 let text=match textMatches with //TODO handle additional cases with error types
+                                          | None | Some([]) -> ""
+                                          | Some([s]) ->s
+                                 let innerLexTag= LexInnerTagBuilder.buildLexInnerTag text hasNestedTag hasBlockText
                                  match innerLexTag with
                                  |LexInnerTag.InnerLexTagError(s) -> LexTagInnerError(s)
                                  | _ -> LexTagProper({Name=name;Attributes=attributes;LexInnerTag=innerLexTag})

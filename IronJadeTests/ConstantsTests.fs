@@ -7,7 +7,7 @@ open Newtonsoft.Json
 open IronJade
     module ConstantsTests =
         let testFullTagPattern input=
-            test <@ Regex.IsMatch(input,Constants.Regex.FULL_TAG_PATTERN)  @>
+            test <@ Regex.IsMatch(input,Constants.Regex.FullTagPattern)  @>
         //no attr or text
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
@@ -95,7 +95,7 @@ open IronJade
             testFullTagPattern "table#tableid.classa.classb.classc(one=\"one\",two=\"two\") text"
             
         let testIdTagPattern input=
-            test <@ Regex.IsMatch(input,Constants.Regex.FULL_DIV_ID_PATTERN)  @>
+            test <@ Regex.IsMatch(input,Constants.Regex.FullTagPattern)  @>
         //no attr or text
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]
@@ -143,7 +143,7 @@ open IronJade
             testIdTagPattern "#tableid.classa.classb.classc(one=\"one\",two=\"two\") text"
             
         let testClassPattern input=
-            test <@ Regex.IsMatch(input,Constants.Regex.FULL_DIV_CLASS_PATTERN)  @>
+            test <@ Regex.IsMatch(input,Constants.Regex.FullTagPattern)  @>
         //no attr or text
         [<Test>]
         [<CategoryAttribute("Constants.Regex")>]

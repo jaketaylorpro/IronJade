@@ -25,35 +25,35 @@ open HtmlAgilityPack
                     ignore (parent.contents.AppendChild(doc.contents.CreateTextNode("\n"+(reindentText text n.Indentation))))//TODO figure out rules about when to indent text and not
                 |LexLine.Root(_,_) -> ignore (hchildren n parent)
                 |LexLine.Tag(tag) -> match tag with
-                                     |LexTag.LexTagError(errorMessage)|LexTag.LexTagInnerError(errorMessage)-> failwith (System.String.Format(Constants.Text.FAIL_TAG_ERROR_P2,n.LineNumber,errorMessage))
-                                     |LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=LexInnerTag.Inline(text)}) ->
+                                     | LexTag.LexTagError(errorMessage) | LexTag.LexTagInnerError(errorMessage)-> failwith (System.String.Format(Constants.Text.FAIL_TAG_ERROR_P2,n.LineNumber,errorMessage))
+                                     | LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=LexInnerTag.Inline(text)}) ->
                                         let c=doc.contents.CreateComment(System.String.Format("<!--{0}-->",text))
                                         ignore (parent.contents.AppendChild(c))
-                                     |LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=LexInnerTag.BlockText}) ->
+                                     | LexTag.LexTagProper({Name="//";Attributes=_;LexInnerTag=LexInnerTag.BlockText}) ->
                                         let text=n.ChildNodes
                                                  |>List.fold (fun acc cn->  let newline=match acc with
-                                                                                        |"" -> ""
-                                                                                        |_ -> "\n"
+                                                                                        | "" -> ""
+                                                                                        | _ -> "\n"
                                                                             let ct = match cn.LexLine with
-                                                                                     |LexLine.TextBlockLine(t) -> (reindentText t n.Indentation)
-                                                                                     |_ -> failwith (System.String.Format(Constants.Text.FAIL_COMMENT_BLOCK_INVALID_P1,cn.LexLine.ToString()))
+                                                                                     | LexLine.TextBlockLine(t) -> (reindentText t n.Indentation)
+                                                                                     | _ -> failwith (System.String.Format(Constants.Text.FAIL_COMMENT_BLOCK_INVALID_P1,cn.LexLine.ToString()))
                                                                             acc+newline+ct) ""
                                         let c=doc.contents.CreateComment(System.String.Format("<!--{0}-->",text))
                                         ignore (parent.contents.AppendChild(c))
 
-                                     |LexTag.LexTagProper({Name="//-";Attributes=_;LexInnerTag=_}) ->()
-                                     |LexTag.LexTagProper({Name=name;Attributes=attributes;LexInnerTag=lexInnerTag})->
+                                     | LexTag.LexTagProper({Name="//-";Attributes=_;LexInnerTag=_}) ->()
+                                     | LexTag.LexTagProper({Name=name;Attributes=attributes;LexInnerTag=lexInnerTag})->
                                          let mutable e=doc.contents.CreateElement name
-                                         ignore (attributes|>List.fold (fun (acc:ref<HtmlNode>) (n,v)->
-                                             ignore (acc.contents.SetAttributeValue(n,Util.ifNoneEmpty v))
+                                         ignore (attributes |> List.fold (fun (acc:ref<HtmlNode>) (n,v)->
+                                             ignore (acc.contents.SetAttributeValue(n,Util.String.ifNoneEmpty v))
                                              acc) (ref e))
                                          ignore (parent.contents.AppendChild(e))
                                          match lexInnerTag with
-                                         |LexInnerTag.Inline(text) ->
+                                         | LexInnerTag.Inline(text) ->
                                              ignore (e.AppendChild(doc.contents.CreateTextNode(text)) )
-                                         |LexInnerTag.BlockText|LexInnerTag.Normal ->
+                                         | LexInnerTag.BlockText | LexInnerTag.NestedInline(_) | LexInnerTag.Normal ->
                                              ignore (hchildren n (ref e))
-                                         |LexInnerTag.InnerLexTagError(_) -> () //TODO this isn't reachable, all inner errors cause the tag to not be a LexTagProper
+                                         | LexInnerTag.InnerLexTagError(_) -> () //TODO this isn't reachable, all inner errors cause the tag to not be a LexTagProper
             h rootNode (ref doc.DocumentNode) (ref doc)
             doc.DocumentNode.OuterHtml
 

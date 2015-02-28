@@ -35,7 +35,7 @@ open System.Text.RegularExpressions
                     let lexLine=LexLineBuilder.buildLexLine line inTextBlock
                     let indentedLines,restLines=
                         lines.Tail
-                        |>Util.takeWhileAndRest (fun (_,i,_) -> i>ind)
+                        |>Util.List.takeWhileAndRest (fun (_,i,_) -> i>ind)
                     match lexLine with
                     //first handle non nestible types
                     | LexLine.Root(_) //root should not appear here so we'll treat it as not nestble
@@ -50,7 +50,17 @@ open System.Text.RegularExpressions
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=LexInnerTag.NestedInline(s)}))
                         -> let childChildNodes=groupLines indentedLines [] false indType
                            //TODO now to recursivly add until we find a non nested tag
-                           let childNode={LexLine=LexLine.Tag(LexTagBuilder.buildLexTag s);ChildNodes=childChildNodes;LineNumber=ln;Indentation=ind+1}
+                           //recursivly create new lexlines with the remaining text of the line, until we don't detect a nested tag. cons all the lexlines onto a list
+                           let childNode=Util.List.foldWhile (fun st ns -> 
+                                                                          let lexLine=LexLineBuilder.buildLexLine st false
+                                                                          match lexLine with
+                                                                          | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=LexInnerTag.NestedInline(s2)}))
+                                                                            -> Some(s2),lexLine::ns
+                                                                          | _ -> None,lexLine::ns) s []
+                                         //next nest each tag
+                                         |>List.fold (fun runningChildNodes l -> [{LexLine=l;ChildNodes=runningChildNodes;LineNumber=ln;Indentation=ind}]) childChildNodes
+                                         |>List.head
+                           //let childNode={LexLine=LexLine.Tag(LexTagBuilder.buildLexTag s);ChildNodes=childChildNodes;LineNumber=ln;Indentation=ind+1}
                            groupLines restLines ({LexLine=lexLine;ChildNodes=[childNode];LineNumber=ln;Indentation=ind}::nodes) false indType
                     //now handle nestabile types
                     | LexLine.Tag(LexTag.LexTagProper({Name=_;Attributes=_;LexInnerTag=normalOrBlock}))

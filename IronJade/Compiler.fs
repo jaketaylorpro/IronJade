@@ -19,8 +19,8 @@ open IronJade
                     let attrN,attrV=attributes|>List.unzip
                     let compiledAttributes=List.zip attrN (attrV|>List.map compileOptStringWithEnv)
                     let compiledInnerTag=match innerTag with
-                                         |LexInnerTag.BlockText|LexInnerTag.InnerLexTagError(_)|LexInnerTag.Normal -> innerTag //no text to compile, so we return the same record
-                                         |LexInnerTag.Inline(text) -> LexInnerTag.Inline(compileStringWithEnv text)
+                                         | LexInnerTag.BlockText | LexInnerTag.NestedInline(_) | LexInnerTag.InnerLexTagError(_) | LexInnerTag.Normal -> innerTag //no text to compile, so we return the same record
+                                         | LexInnerTag.Inline(text) -> LexInnerTag.Inline(compileStringWithEnv text)
                     LexTag.LexTagProper({Name=name;Attributes=compiledAttributes;LexInnerTag=compiledInnerTag})
             let compileLexLine (line:LexLine) :LexLine=
                 match line with

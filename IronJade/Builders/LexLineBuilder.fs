@@ -6,6 +6,6 @@
                 TextBlockLine(line) 
             else
                 match line with
-                | Util.Prefix "doctype " rest -> DocType(rest)
-                | Util.Prefix "| " rest -> TextLine(rest)
+                | Util.ActivePattern.Prefix "doctype " rest -> DocType(rest)
+                | Util.ActivePattern.Prefix "| " rest -> TextLine(rest)
                 | _-> Tag(LexTagBuilder.buildLexTag line)

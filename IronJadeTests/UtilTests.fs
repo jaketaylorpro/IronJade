@@ -13,8 +13,10 @@ open IronJade
             let noPattern="a(.*)e"
             let testString="abcd"
             match testString with
-            | Util.Regex noPattern [oneMatch] -> failwith "pattern should not be a match"
-            | Util.Regex yesPattern [oneMatch] -> oneMatch|> should equal "bc"
+            | Util.ActivePattern.Regex noPattern [oneMatch] 
+                -> failwith "pattern should not be a match"
+            | Util.ActivePattern.Regex yesPattern [oneMatch] 
+                -> oneMatch|> should equal "bc"
             | _ -> failwith "should match above"
         [<Test>]
         [<CategoryAttribute("Util")>]
@@ -23,9 +25,11 @@ open IronJade
             let noPattern="a(.*)e"
             let testString="abcd"
             match testString with
-            | Util.Regex noPattern [matchOne;matchTwo] -> failwith "pattern should not be a match"
-            | Util.Regex yesPattern [matchOne;matchTwo] -> matchOne|> should equal "bc"
-                                                           matchTwo|> should equal ""
+            | Util.ActivePattern.Regex noPattern [matchOne;matchTwo]
+                -> failwith "pattern should not be a match"
+            | Util.ActivePattern.Regex yesPattern [matchOne;matchTwo] 
+                -> matchOne|> should equal "bc"
+                   matchTwo|> should equal ""
             | _ -> failwith "should match above"
         [<Test>]
         [<CategoryAttribute("Util")>]
@@ -34,12 +38,15 @@ open IronJade
             let noPattern="a(.*)e"
             let testString="abcdfgh"
             match testString with
-            | Util.RegexMC noPattern [[matchOne];[matchTwo]] -> failwith "pattern should not be a match"
-            | Util.RegexMC yesPattern [[matchOne];[matchTwoA;matchTwoB]] -> failwith "pattern should not be a match, count of captures of second group was wrong"
-            | Util.RegexMC yesPattern [[matchOne];[matchTwoA;matchTwoB;matchTwoC]] -> matchOne|> should equal "bc"
-                                                                                      matchTwoA|> should equal "f"
-                                                                                      matchTwoB|> should equal "g"
-                                                                                      matchTwoC|> should equal "h"
+            | Util.ActivePattern.RegexMC noPattern [[matchOne];[matchTwo]]
+                -> failwith "pattern should not be a match"
+            | Util.ActivePattern.RegexMC yesPattern [[matchOne];[matchTwoA;matchTwoB]]
+                -> failwith "pattern should not be a match, count of captures of second group was wrong"
+            | Util.ActivePattern.RegexMC yesPattern [[matchOne];[matchTwoA;matchTwoB;matchTwoC]]
+                -> matchOne |> should equal "bc"
+                   matchTwoA|> should equal "f"
+                   matchTwoB|> should equal "g"
+                   matchTwoC|> should equal "h"
             | _ -> failwith "should match above"
         [<Test>]
         [<CategoryAttribute("Util")>]
@@ -48,8 +55,8 @@ open IronJade
             let noPattern="a(.*)e"
             let testString="abcdfgh"
             let expected = ["0",[testString];"start",[];"mid",["bc"];"end",["f";"g";"h"]]|>Map.ofList
-            test <@Util.getRegexGroupsByName yesPattern testString = Some(expected)@>
-            test <@Util.getRegexGroupsByName noPattern testString = None@>
+            test <@Util.String.getRegexGroupsByName yesPattern testString = Some(expected)@>
+            test <@Util.String.getRegexGroupsByName noPattern testString = None@>
         [<Test>]
         [<CategoryAttribute("Util")>]
         let ``takewhile test`` () :unit=
@@ -57,17 +64,17 @@ open IronJade
             let f = (fun i->i<10)
             let take=[1;2;3]
             let rest=[10;1;2;3]
-            test <@(Util.takeWhileAndRest f full) = (take,rest)@>
+            test <@(Util.List.takeWhileAndRest f full) = (take,rest)@>
 
         [<Test>]
         [<CategoryAttribute("Util")>]
         let ``objToKvp test`` () :unit=
             let o:Linq.JObject=JsonConvert.DeserializeObject("{i:0,a:'test'}"):?>Linq.JObject
             let kvp:List<string*obj>=["i",0L:>obj;"a","test":>obj]//we need to explicity call i a long because that is the default integer type for json.net
-            test <@(Util.jobjToKvp o) = kvp@>
+            test <@(Util.Reflection.jobjToKvp o) = kvp@>
         
         
         [<Test>]
         [<CategoryAttribute("Util")>]
         let ``foldWhile test`` () :unit=
-            test <@ Util.foldWhile (fun i l->if i=0 then (None,l) else (Some(i-1),i::l)) 4 [] = [1;2;3;4] @>
+            test <@ Util.List.foldWhile (fun i l->if i=0 then (None,l) else (Some(i-1),i::l)) 4 [] = [1;2;3;4] @>

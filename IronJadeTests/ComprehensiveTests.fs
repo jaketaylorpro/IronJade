@@ -15,10 +15,10 @@ open Newtonsoft.Json
             |> lexLines
             |> compileLexNode e
             |> formatLexNode
-            |>Util.removeWhitespace
-            |>Util.removeAllNewlines
-            |>Util.htmlTrim
-            |>Util.htmlCommentTrim
+            |>Util.String.removeWhitespace
+            |>Util.String.removeAllNewlines
+            |>Util.String.htmlTrim
+            |>Util.String.htmlCommentTrim
             
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
@@ -31,16 +31,16 @@ open Newtonsoft.Json
             let htmlFilePath=System.String.Format("../../tests/{0}.html",testName)
             let jadeLines=System.IO.File.ReadAllLines(jadeFilePath)
             let htmlContents=System.IO.File.ReadAllLines(htmlFilePath)
-                             |>Util.joinLines//TODO we want it to look like this eventually without the two proceding steps
-                             |>Util.removeWhitespace
-                             |>Util.removeAllNewlines
-                             |>Util.htmlTrim
-                             |>Util.htmlCommentTrim
+                             |>Util.String.joinLines//TODO we want it to look like this eventually without the two proceding steps
+                             |>Util.String.removeWhitespace
+                             |>Util.String.removeAllNewlines
+                             |>Util.String.htmlTrim
+                             |>Util.String.htmlCommentTrim
             
             let env=if System.IO.File.Exists(jsonFilePath)
                     then
-                        JsonConvert.DeserializeObject(System.IO.File.ReadAllLines(jsonFilePath)|>Util.joinLines):?>Linq.JObject
-                        |>Util.jobjToKvp
+                        JsonConvert.DeserializeObject(System.IO.File.ReadAllLines(jsonFilePath)|>Util.String.joinLines):?>Linq.JObject
+                        |>Util.Reflection.jobjToKvp
                     else
                         []
             test <@ t jadeLines env= htmlContents @>
