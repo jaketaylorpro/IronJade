@@ -54,3 +54,22 @@ open Newtonsoft.Json
         [<CategoryAttribute("Lexer")>]
         let ``full test spaces4`` () =
             test <@  lexLines ["html";"    body"] = (htmlAndBody (Space(4))) @>
+        [<Test>]
+        [<CategoryAttribute("Lexer")>]
+        let ``indent detect tab`` () =
+            let lines=[|"p.";"\ttext"|]
+            let ind=Lexer.detectIndentationType lines
+            Assert.AreEqual(Indentation.Tab,ind)
+        [<Test>]
+        [<CategoryAttribute("Lexer")>]
+        let ``indent detect space 2`` () =
+            let lines=[|"p.";"  text"|]
+            let ind=Lexer.detectIndentationType lines
+            Assert.AreEqual(Indentation.Space(2),ind)
+        [<Test>]
+        [<CategoryAttribute("Lexer")>]
+        let ``indent detect space 4`` () =
+            let lines=[|"p.";"    text"|]
+            let ind=Lexer.detectIndentationType lines
+            Assert.AreEqual(Indentation.Space(4),ind)
+            

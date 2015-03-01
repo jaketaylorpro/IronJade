@@ -93,5 +93,17 @@ open Newtonsoft.Json
         [<CategoryAttribute("Comprehensive")>]
         let ``inline tag``() =
             comprehensiveTester "inline_tag"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``block text tab``() =
+            comprehensiveTester "block_text_tab"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``block text space 2``() =
+            comprehensiveTester "block_text_space_2"
+        [<Test>]
+        [<CategoryAttribute("Comprehensive")>]
+        let ``block text space 4``() =
+            comprehensiveTester "block_text_space_4"
 
 
