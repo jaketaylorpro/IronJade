@@ -22,3 +22,10 @@
             match newState with
             |None -> newAcc
             |Some(v) -> foldWhile f v newAcc
+        let forallpeek<'A> (f:Option<'A> -> 'A -> Option<'A> -> bool) (l:List<'A>) :bool=
+            let rec h (last:Option<'A>) (list:List<'A>) =
+                match list with
+                | [] -> true
+                | [a] -> f last a None
+                | a::n::r -> (f last a (Some(n))) && (h (Some(a)) (n::r))
+            h None l

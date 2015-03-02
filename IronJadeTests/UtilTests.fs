@@ -78,3 +78,15 @@ open IronJade
         [<CategoryAttribute("Util")>]
         let ``foldWhile test`` () :unit=
             test <@ Util.List.foldWhile (fun i l->if i=0 then (None,l) else (Some(i-1),i::l)) 4 [] = [1;2;3;4] @>
+
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``forallpeek test`` () :unit=
+            let fib=[1;2;3;5;8;13;21]
+            let notfib=[0;1;2;3;5;8;13;21]
+            let fibTest=fun (p:Option<int>) (c:int) (n:Option<int>) 
+                            -> if p.IsNone || n.IsNone 
+                               then true
+                               else p.Value + c = n.Value
+            test <@Util.List.forallpeek fibTest fib = true@>
+            test <@Util.List.forallpeek fibTest notfib = false@>
