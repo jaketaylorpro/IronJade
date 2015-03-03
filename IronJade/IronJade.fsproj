@@ -57,6 +57,7 @@
     <Compile Include="Constants\ConstantsText.fs" />
     <Compile Include="Types\Indentation.fs" />
     <Compile Include="Types\Compiled.fs" />
+    <Compile Include="Types\PreLexLine.fs" />
     <Compile Include="Types\LexInnerTag.fs" />
     <Compile Include="Types\LexTag.fs" />
     <Compile Include="Types\LexLine.fs" />
