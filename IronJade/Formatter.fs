@@ -1,7 +1,7 @@
 ﻿namespace IronJade
 open HtmlAgilityPack
     module Formatter=
-        let formatLexNode (rootNode:LexNode) :string=
+        let formatLexNode (rootNode:LexNode) (writer:ref<System.IO.TextWriter>) :unit=
             let indType = match rootNode.LexLine with
                           | LexLine.Root(ind,_) -> ind
                           | _ -> failwith Constants.Text.FAIL_FORMAT_NON_ROOT_NODE
@@ -55,6 +55,7 @@ open HtmlAgilityPack
                                              ignore (hchildren n (ref e))
                                          | LexInnerTag.InnerLexTagError(_) -> () //TODO this isn't reachable, all inner errors cause the tag to not be a LexTagProper
             h rootNode (ref doc.DocumentNode) (ref doc)
-            doc.DocumentNode.OuterHtml
+            doc.DocumentNode.WriteContentTo(writer.contents)
+            //doc.DocumentNode.OuterHtml
 
 

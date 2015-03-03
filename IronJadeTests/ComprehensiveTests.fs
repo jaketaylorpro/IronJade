@@ -11,15 +11,14 @@ open Newtonsoft.Json
 
     module ComprehensiveTests=
         let t s e=
-            s
-            |> lexLines
-            |> compileLexNode e
-            |> formatLexNode
+            let w=new System.IO.StringWriter()
+            let n= s|> lexLines|> compileLexNode e
+            ignore(formatLexNode n (ref (w:>System.IO.TextWriter)))
+            w.ToString()
             |>Util.String.removeWhitespace
             |>Util.String.removeAllNewlines
             |>Util.String.htmlTrim
             |>Util.String.htmlCommentTrim
-            
         [<Test>]
         [<CategoryAttribute("Comprehensive")>]
         let ``html only``() =

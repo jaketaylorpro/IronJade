@@ -6,5 +6,6 @@
 */bin/*
 # user files
 *.suo
+*.csproj.user
 # nuget
 packages/*
