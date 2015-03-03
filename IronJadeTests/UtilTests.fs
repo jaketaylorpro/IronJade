@@ -90,3 +90,41 @@ open IronJade
                                else p.Value + c = n.Value
             test <@Util.List.forallpeek fibTest fib = true@>
             test <@Util.List.forallpeek fibTest notfib = false@>
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``tryfindpeek test`` () :unit=
+            let partfib=[55;82;12;18;17;35;47;106]
+            let nopartfib=[55;82;12;18;17;47;106]
+            let findFibTest=fun (p:Option<int>) (c:int) (n:Option<int>)
+                                -> if p.IsNone || n.IsNone
+                                   then false
+                                   else p.Value + c = n.Value
+            test <@Util.List.tryfindpeek findFibTest partfib = Some(17)@>
+            test <@Util.List.tryfindpeek findFibTest nopartfib = None@>
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``prefix test`` () :unit=
+            match "testabc" with
+            | Util.ActivePattern.Prefix "test" rest -> test <@rest = "abc"@>
+            | _ -> failwith "active pattern did not match when it should have"
+            match "testabc" with
+            | Util.ActivePattern.Prefix "testb" rest -> failwith "active pattern matched when it should not have"
+            | _ -> ()
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``suffix test`` () :unit=
+            match "testabc" with
+            | Util.ActivePattern.Suffix "abc" rest -> test <@rest = "test"@>
+            | _ -> failwith "active pattern did not match when it should have"
+            match "testabc" with
+            | Util.ActivePattern.Suffix "btest" rest -> failwith "active pattern matched when it should not have"
+            | _ -> ()
+        [<Test>]
+        [<CategoryAttribute("Util")>]
+        let ``contains test`` () :unit=
+            match "testabc" with
+            | Util.ActivePattern.Contains "abc" i -> test <@i = 4@>
+            | _ -> failwith "active pattern did not match when it should have"
+            match "testabc" with
+            | Util.ActivePattern.Contains "btest" i -> failwith "active pattern matched when it should not have"
+            | _ -> ()

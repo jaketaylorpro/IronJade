@@ -5,3 +5,4 @@
         let FAIL_TAG_ERROR_P2="there was an error parsing a tag<line:{0}>:\n\t{1}"
         let FAIL_IMPOSSIBLE_REGEX_MATCH="unexpected regex capturing is causing an unforseen match case"
         let FAIL_FORMAT_NON_ROOT_NODE="attempted to format a non root node"
+        let FAIL_MIXED_INDENTATION_P3="mixed indentation found<line:{0}>:\n\t{1}\nexpecting {2} indentation"

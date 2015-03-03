@@ -15,11 +15,19 @@ open System.Text.RegularExpressions
                 |Some(line) when (line.Chars 0) = '\t' -> Tab
                 |Some(line) -> let numSpaces=line.ToCharArray()|>Seq.takeWhile (fun c->c=' ')|>Seq.length
                                Space(numSpaces)
-        (*let handleIndentationErrors (lines:seq<string>) (ind:Indentation)=
+        let handleIndentationErrors (ind:Indentation) (lines:List<PreLexLine>) :List<PreLexLine>=
             match ind with
             |Indentation.Space(_) //assert that no tabs are used for indentation in the document
-                -> lines|>Seq.forall(fun l-> Regex.Match(l,s)*)
-        let readLines (lines:seq<string>) (indType:Indentation) :List<PreLexLine>=
+                (*-> match (Util.List.tryfindpeek(fun p c n-> if p.IsSome && p.RawText.Trim().EndsWith(".")
+                                                            then match c.RawText.substring(0,c.Indentation) with
+                                                                 | Util.ActivePattern.Contains "\t" -> Regex.Match(c.RawText," *").Success
+                                                            else) lines) with
+                   | None -> lines
+                   | Some({RawText=rt;LineNumber=ln;Indentation=_;TrimmedText=_}) -> failwith (System.String.Format(Constants.Text.FAIL_MIXED_INDENTATION_P3,ln,rt,ind))*)
+                -> lines
+            |Indentation.Tab
+                -> lines
+        let readLines (indType:Indentation) (lines:seq<string>) :List<PreLexLine>=
                 lines //read each line, assign it a number, and an indentation
                 |>Seq.mapi (fun lineNumber l->let tabCount,line= match indType with
                                                                  | Indentation.Tab ->
@@ -75,7 +83,7 @@ open System.Text.RegularExpressions
                         -> groupLines (List.append (reindentNestedTextBlockLines indentedLines indType) restLines) ({LexLine=lexLine;ChildNodes=[];LineNumber=ln;Indentation=ind}::nodes) true indType
         let lexLines (lines:seq<string>) :LexNode=
             let indType=detectIndentationType lines
-            let linesR=readLines lines indType
+            let linesR=lines|>readLines indType|>handleIndentationErrors indType
             {
                 LexLine=LexLine.Root(indType,NotCompiled);
                 ChildNodes=(groupLines linesR [] false indType);

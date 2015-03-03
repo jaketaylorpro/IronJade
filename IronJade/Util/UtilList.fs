@@ -29,3 +29,10 @@
                 | [a] -> f last a None
                 | a::n::r -> (f last a (Some(n))) && (h (Some(a)) (n::r))
             h None l
+        let tryfindpeek<'A> (f:Option<'A> -> 'A -> Option<'A> -> bool) (l:List<'A>) :Option<'A>=
+            let rec h (last:Option<'A>) (list:List<'A>) =
+                match list with
+                | [] -> None
+                | [a] -> if (f last a None) then  Some(a) else None
+                | a::n::r -> if (f last a (Some(n))) then Some(a) else (h (Some(a)) (n::r))
+            h None l

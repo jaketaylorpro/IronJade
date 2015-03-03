@@ -1,10 +1,19 @@
 ﻿namespace IronJade.Util
 open System.Text.RegularExpressions
     module ActivePattern=
-        //active patterns
         let (|Prefix|_|) (p:string) (s:string) =
             if s.StartsWith(p) then
                 Some(s.Substring(p.Length))
+            else
+                None
+        let (|Suffix|_|) (p:string) (s:string) =
+            if s.EndsWith(p) then
+                Some(s.Substring(0,s.Length-p.Length))
+            else
+                None
+        let (|Contains|_|) (p:string) (s:string) =
+            if s.Contains(p) then
+                Some(s.IndexOf(p))
             else
                 None
         let (|Regex|_|) pattern input =
