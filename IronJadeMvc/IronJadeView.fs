@@ -2,7 +2,7 @@
 
 type IronJadeView(jadeFilePath:string) = 
     let readEnvironmentFromDynamic (dyn:obj) :List<string*obj>=
-        IronJade.Util.Reflection.objToKvp dyn
+        IronJade.Util.Reflection.viewBagToKvp (dyn:?>System.Dynamic.DynamicObject)
     member this.JadeNode = 
         let jadeLines=System.IO.File.ReadAllLines(jadeFilePath)
         IronJade.Lexer.lexLines(jadeLines)

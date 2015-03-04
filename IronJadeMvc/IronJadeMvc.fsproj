@@ -52,6 +52,7 @@
     <Compile Include="IronJadeView.fs" />
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
+    <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Web.Infrastructure">
